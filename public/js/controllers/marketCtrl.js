@@ -1,7 +1,7 @@
 habitrpg.controller("MarketCtrl", ['$rootScope', '$scope', 'User', 'API_URL', '$http',
   function($rootScope, $scope, User, API_URL, $http) {
 
-  	$scope.eggs = window.habitrpgShared.items.items.pets;
+  	$scope.eggs = window.habitrpgShared.items.items.eggs;
   	$scope.hatchingPotions = window.habitrpgShared.items.items.hatchingPotions;
     $scope.userEggs = User.user.items.eggs;
     $scope.userHatchingPotions = User.user.items.hatchingPotions;

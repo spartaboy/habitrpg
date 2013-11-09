@@ -5,16 +5,16 @@ script(type='text/ng-template', id='partials/options.inventory.inventory.html')
       p.well Click an egg to see usable potions highlighted in green and then click one of the highlighted potions to hatch your pet. If no potions are highlighted, click that egg again to deselect it, and instead click a potion first to have the usable eggs highlighted. You can also sell unwanted drops to Alexander the Merchant.
       menu.inventory-list(type='list')
         li.customize-menu
-          menu.pets-menu(label='Eggs ({{userEggs.length}})')
+          menu.pets-menu(label='Eggs ({{eggCount}})')
             p(ng-show='userEggs.length < 1') You don't have any eggs yet.
             div(ng-repeat='egg in userEggs track by $index')
-              button.customize-option(tooltip='{{egg.text}}', ng-click='chooseEgg(egg, $index)', class='Pet_Egg_{{egg.name}}', ng-class='selectableInventory(egg, selectedPotion.name, $index)')
+              button.customize-option(tooltip='{{items.items.eggs[egg].text}}', ng-click='chooseEgg(egg, $index)', class='Pet_Egg_{{egg.name}}', ng-class='selectableInventory(egg, selectedPotion.name, $index)')
               p {{egg.text}}
         li.customize-menu
           menu.hatchingPotion-menu(label='Hatching Potions ({{userHatchingPotions.length}})')
             p(ng-show='userHatchingPotions.length < 1') You don't have any hatching potions yet.
             div(ng-repeat='hatchingPotion in userHatchingPotions track by $index')
-              button.customize-option(tooltip='{{hatchingPotion}}', ng-click='choosePotion(hatchingPotion, $index)', class='Pet_HatchingPotion_{{hatchingPotion}}', ng-class='selectableInventory(selectedEgg, hatchingPotion, $index)')
+              button.customize-option(tooltip='{{hatchingPotion}}', ng-click='choosePotion(hatchingPotion, $index)', class='Pet_HatchingPotion_{{hatchingPotion}}', ng-class='{"selectableInventory: user.items.pets[selectedEgg+"-"+hatchingPotion]')
               p {{hatchingPotion}}
 
     .span6
