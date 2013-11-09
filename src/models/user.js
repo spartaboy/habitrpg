@@ -7,6 +7,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var helpers = require('habitrpg-shared/script/helpers');
+var items = require('habitrpg-shared/script/items');
 var _ = require('lodash');
 var TaskSchema = require('./task').schema;
 var Challenge = require('./challenge').model;
@@ -92,7 +93,7 @@ var UserSchema = new Schema({
     todos: Array //[{data: Date, value: Number}] // big peformance issues if these are defined
   },
 
-  /* FIXME remove?*/
+  // FIXME remove?
   invitations: {
     guilds: {type: Array, 'default': []},
     party: Schema.Types.Mixed
@@ -103,52 +104,58 @@ var UserSchema = new Schema({
     head: Number,
     shield: Number,
 
-    /*FIXME - tidy this up, not the best way to store current pet*/
+    // -------------- Animals -------------------
 
-    currentPet: {
-      /*Cactus*/
+    // Complex bit here. The result looks like:
+    // pets: {
+    //   'Wolf-Desert': 0, // 0 means does not own
+    //   'PandaCub-Red': 10, // Number represents "Growth Points"
+    //   etc...
+    // }
+    pets: _.reduce(items.items.eggs, function(m, egg){
+     return  _.defaults(m, _.reduce(items.items.hatchingPotions, function(m2, pot){
+        m2[egg.name + '-' + pot.name] = Number; return m;
+      }, {}));
+    }, {}),
+    currentPet: String, // Cactus-Desert
 
-      text: String,
-      /*Cactus*/
+    // eggs: {
+    //  'PandaCub': 0, // 0 indicates "doesn't own"
+    //  'Wolf': 5 // Number indicates "stacking"
+    // }
+    eggs: _.reduce(items.items.eggs, function(m, egg){
+      m[egg.name] = Number; return m;
+    }, {}),
 
-      name: String,
-      /*3*/
+    // hatchingPotions: {
+    //  'Desert': 0, // 0 indicates "doesn't own"
+    //  'CottonCandyBlue': 5 // Number indicates "stacking"
+    // }
+    hatchingPotions: _.reduce(items.items.hatchingPotions, function(m, pot){
+      m[pot.name] = Number;return m;
+    }, {})
 
-      value: Number,
-      /*"Find a hatching potion to pour on this egg, and one day it will hatch into a loyal pet.",*/
-
-      notes: String,
-      /*Skeleton*/
-
-      modifier: String,
-      /*Cactus-Skeleton*/
-
-      str: String
+    food: {
+      'Desert': Number,
+      'Base': Number
+      // etc..
     },
 
-    eggs: [
-      {
-        // example: You've found a Wolf Egg! Find a hatching potion to pour on this egg, and one day it will hatch into a loyal pet
-        dialog: String,
-        // example: Wolf
-        name: String, 
-        // example: Find a hatching potion to pour on this egg, and one day it will hatch into a loyal pet.
-        notes: String,
-        // example: Wolf 
-        text: String, 
-        /* type: String, //Egg // this is forcing mongoose to return object as "[object Object]", but I don't think this is needed anyway? */
-        // example: 3
-        value: Number 
-      }
-    ],
-    hatchingPotions: Array, // ["Base", "Skeleton",...]
+    // mounts: {
+    //  'Wolf-Desert': true,
+    //  'PandaCub-Red': false,
+    //  etc...
+    // }
+    mounts: _.reduce(items.items.eggs, function(m, egg){
+      return  _.defaults(m, _.reduce(items.items.hatchingPotions, function(m2, pot){
+        m2[egg.name + '-' + pot.name] = Boolean; return m;
+      }, {}));
+    }, {}),
+
     lastDrop: {
       date: {type: Date, 'default': Date.now},
       count: {type: Number, 'default': 0}
-    },
-    // ["BearCub-Base", "Cactus-Base", ...]
-
-    pets: Array
+    }
   },
 
   lastCron: {
